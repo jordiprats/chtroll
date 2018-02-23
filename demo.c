@@ -15,6 +15,6 @@ int main(void)
 
     getcwd(path, 80);
 
-    printf("%i - %s\n",i,path);  
+    printf("%i - %s\n",i,path);
   }
 }
