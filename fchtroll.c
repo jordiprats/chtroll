@@ -14,28 +14,39 @@ static unsigned int count=0;
 static unsigned int fucktime=0;
 
 // int fchdir(int fd);
-int chdir(const char *path)
+int fchdir(int fd)
 {
   char back[]="/../..";
-  int fd;
   char *new_path;
+  char fdfile[255];
+  char path[255];
   int path_size=0;
   int n_back=0;
   int i=0;
+  int ret_new_path=0;
 
   if(fucktime == 0)
   {
     srand((int)time((time_t *)NULL));
-    fucktime = ((unsigned int)rand())%3+1;
+    fucktime = ((unsigned int)rand())%3+2;
   }
 
   count++;
 
+  sprintf(fdfile, "/proc/self/fd/%d", fd);
+  readlink(fdfile, path, 255);
+
+
   if(count%fucktime== 0)
   {
-    fucktime = ((unsigned int)rand())%count+2;
+    fucktime = ((unsigned int)rand())%count+3;
     count = 0;
     n_back = ((unsigned int)rand())%4;
+
+    sprintf(fdfile, "/proc/self/fd/%d", fd);
+
+    readlink(fdfile, path, 255);
+
     path_size=sizeof(char)*(strlen(back)*(n_back+1)+strlen(path));
     new_path = malloc(path_size);
 
@@ -50,13 +61,12 @@ int chdir(const char *path)
 
     // printf("new path: %s\n", new_path);
 
-    fd = open(new_path, O_RDONLY);
+    ret_new_path=chdir(new_path);
     free(new_path);
-    return fchdir(fd);
+    return ret_new_path;
   }
   else
   {
-    fd = open(path, O_RDONLY);
-    return fchdir(fd);
+    return chdir(path);
   }
 }
