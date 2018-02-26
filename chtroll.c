@@ -22,6 +22,7 @@ int chdir(const char *path)
   int path_size=0;
   int n_back=0;
   int i=0;
+  int ret=0;
 
   if(fucktime == 0)
   {
@@ -52,11 +53,13 @@ int chdir(const char *path)
 
     fd = open(new_path, O_RDONLY);
     free(new_path);
-    return fchdir(fd);
   }
   else
   {
     fd = open(path, O_RDONLY);
-    return fchdir(fd);
   }
+
+  ret = fchdir(fd);
+  close(fd);
+  return ret;
 }
